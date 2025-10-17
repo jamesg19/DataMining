@@ -1,6 +1,6 @@
 ---
 title: "Homework2"
-output: html_notebook
+
 ---
 
 
@@ -17,16 +17,17 @@ library(readxl)
 2. Cargar el conjunto de datos
 ```{r}
 data <- read_excel("C:\\Users\\james\\Documents\\GitHub\\DataMining\\Homework2\\graduados-superior-2023.xlsx")
-
+data <- data[,-1]
+data <- data[,-3]
 
 ```
 
 
 
 ```{r}
-# se omite a;o,
+# se omite año y Nivel_Academico,
 
-columnas_de_interes <- c("CARRERA  y Nivel educativo","Departamento", "Sexo", "Sector", "Pueblo_Pertenencia")
+columnas_de_interes <- c("CARRERA","Departamento", "Sexo", "Sector", "Pueblo_Pertenencia","Edad")
 data_subset <- data[, columnas_de_interes]
 
 data_factores <- as.data.frame(lapply(data_subset, as.factor))
@@ -40,7 +41,7 @@ rules <- apriori(transactions,
 
 # 7. Inspeccionar las reglas más interesantes (ordenadas por lift)
 interesting_rules <- sort(rules, by = "lift", decreasing = TRUE)
-inspect(head(interesting_rules, 10))
+inspect(head(interesting_rules, 100))
 ```
 
 
