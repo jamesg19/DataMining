@@ -1,0 +1,16 @@
+---
+title: "Homework 3"
+
+---
+
+
+```{r}
+library(readxl)
+
+```
+
+
+```{r}
+data <- read_excel("C:\\Users\\james\\Documents\\GitHub\\DataMining\\Homework3\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
+
+```
