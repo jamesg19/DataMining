@@ -6,11 +6,114 @@ title: "Homework 3"
 
 ```{r}
 library(readxl)
+library(arules)
+
+```
+```{r}
+data <- read_excel("C:\\Users\\james\\Documents\\GitHub\\DataMining\\Homework3\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
+```
+
+```{r}
+#filtro de datos para quetzaltenango =9
+data_qtz <- subset(data, HEC_DEPTO == 9)
+
+#Seleccionando columnas para analisis
+data_fp <- data_qtz[, c(
+  "HEC_MES",          # Mes del hecho
+  #"HEC_DEPTO",        # Departamento del hecho
+  "VIC_EDAD",         # Edad víctima
+  "VIC_ESCOLARIDAD",  # Escolaridad de la victima
+  "VIC_EST_CIV",      # Estado civil de la victima
+  "VIC_GRUPET",       # Grupo étnico de la victima
+  "VIC_TRABAJA",      # Si trabaja la victima
+  "VIC_DEDICA",        # Actividad principal de la victima
+  "AGR_EDAD", 
+  "AGR_ESCOLARIDAD", 
+  "AGR_EST_CIV",
+  "AGR_TRABAJA", 
+  "AGR_DEDICA"
+  
+)]
+
+reglas_fp <- fim4r(data_fp,method = "fpgrowth",target = "rules",supp = 0.2,conf = 0.5)
+
+#Reglas en un Dataframe
+rf <- as(reglas_fp, "data.frame")
+
+#head(rf, 50)
+
+#patrones_interesantes <- subset(rf, confidence > 0.6)
+#head(patrones_interesantes, 20)
+# --- 7. Ordenar por lift descendente ---
+rf_ordenadas <- rf[order(-rf$lift), ]
+
+# --- 8. Mostrar las 10 reglas principales ---
+head(rf_ordenadas, 20)
+
 
 ```
 
 
-```{r}
-data <- read_excel("C:\\Users\\james\\Documents\\GitHub\\DataMining\\Homework3\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
+
+
+
+```{r} 
+#filtro de datos para quetzaltenango =9
+data_qtz <- subset(data, HEC_DEPTO == 9)
+
+#Seleccionando columnas para analisis
+data_fp <- data_qtz[, c(
+  "HEC_MES",          # Mes del hecho
+  #"HEC_DEPTO",        # Departamento del hecho
+  "VIC_EDAD",         # Edad víctima
+  "VIC_ESCOLARIDAD",  # Escolaridad de la victima
+  #"VIC_EST_CIV",      # Estado civil de la victima
+  #"VIC_GRUPET",       # Grupo étnico de la victima
+  #"VIC_TRABAJA",      # Si trabaja la victima
+  #"VIC_DEDICA",        # Actividad principal de la victima
+  "AGR_EDAD", 
+  "AGR_ESCOLARIDAD"
+  #"AGR_EST_CIV",
+  #"AGR_TRABAJA", 
+  #"AGR_DEDICA"
+  
+)]
+
+reglas_fp <- fim4r(data_fp,method = "fpgrowth",target = "rules",supp = 0.2,conf = 0.5)
+
+rf <- as(reglas_fp, "data.frame")
+
+rf_ordenadas <- rf[order(-rf$lift), ]
+
+head(rf_ordenadas, 50)
+
+
+```
+
+
+```{r} 
+#filtro de datos para quetzaltenango =9
+data_qtz <- subset(data, HEC_DEPTO == 9)
+
+#Seleccionando columnas para analisis
+data_fp <- data_qtz[, c(
+  "HEC_MES",          # Mes del hecho
+  #"HEC_DEPTO",        # Departamento del hecho
+  "AGR_EDAD",         # Edad agresor
+  "AGR_ESCOLARIDAD",  # Escolaridad de la agresor
+  "AGR_EST_CIV",      # Estado civil de la agresor
+  "AGR_TRABAJA",      # Si trabaja la agresor
+  "AGR_DEDICA"       # Actividad principal de la agresor
+  
+)]
+
+reglas_fp <- fim4r(data_fp,method = "fpgrowth",target = "rules",supp = 0.2,conf = 0.5)
+
+rf <- as(reglas_fp, "data.frame")
+
+rf_ordenadas <- rf[order(-rf$lift), ]
+
+head(rf_ordenadas, 50)
+
 
 ```
