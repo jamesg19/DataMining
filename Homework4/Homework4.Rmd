@@ -35,21 +35,14 @@ datos_limpios_vulnerabilidad <- datos_vulnerabilidad_raw %>%
     AGR_EST_CIV = ifelse(AGR_EST_CIV == 99, NA, AGR_EST_CIV),
     VIC_TRABAJA = ifelse(VIC_TRABAJA >= 3, NA, VIC_TRABAJA), 
     AGR_TRABAJA = ifelse(AGR_TRABAJA >= 3, NA, AGR_TRABAJA), 
-    
-    # Hijos y Edad
     TOTAL_HIJOS = ifelse(TOTAL_HIJOS == 99, NA, TOTAL_HIJOS), #99 CODIGO DE HIJOS IGNORADOS
     VIC_EDAD = ifelse(VIC_EDAD > 100, NA, VIC_EDAD)
   )
 
 datos_finales_cluster <- na.omit(datos_limpios_vulnerabilidad)
 
-# 2.4. Estandarizar/Escalar los datos (Cálculo de z-scores)
 datos_escalados <- scale(datos_finales_cluster)
 
-
-# --- Tarea 3: Determinar K (Método del Codo Manual con ggplot2) ---
-
-# Calcularemos la suma de cuadrados dentro del clúster (WSS) para K=1 a K=10
 wss_values <- numeric(10)
 set.seed(321) # Cambiamos la semilla
 for (i in 1:10) {
@@ -60,41 +53,24 @@ for (i in 1:10) {
 # Creación de un Data Frame para el gráfico del codo
 wss_df <- data.frame(K = 1:10, WSS = wss_values)
 
-# Gráfico del Método del Codo usando ggplot2
-ggplot(wss_df, aes(x = K, y = WSS)) +
-  geom_line(color = "blue", size = 1) +
-  geom_point(color = "red", size = 3) +
-  geom_vline(xintercept = 3, linetype = "dashed", color = "gray", size = 1) + # Marcamos el K elegido
-  labs(title = "Método del Codo para K-Means (Vulnerabilidad)",
-       x = "Número de Clústers (K)",
-       y = "Suma de Cuadrados Intra-Clúster (WSS)") +
-  theme_minimal()
-
-# *Asumimos que K=3 es un punto de inflexión razonable*
 num_clusters <- 3 
 
 
-# --- Tarea 4: Ejecutar el Algoritmo K-Means ---
-
+# Ejecutar el Algoritmo K-Means 
 set.seed(321)
 km_final <- kmeans(datos_escalados, centers = num_clusters, nstart = 50) # nstart=50 para mayor robustez
 
-# --- Tarea 5: Analizar e Interpretar los Resultados ---
 
-# 5.1. Adjuntar las asignaciones de clúster a los datos NO escalados
 datos_finales_cluster$cluster_group <- km_final$cluster
 
-# 5.2. Calcular los perfiles promedios por clúster
 perfiles_resumen <- datos_finales_cluster %>%
   group_by(cluster_group) %>%
   summarise(
-    # Promedios de variables continuas
+
     Promedio_Hijos = mean(TOTAL_HIJOS, na.rm = TRUE),
     Promedio_Edad_Victima = mean(VIC_EDAD, na.rm = TRUE),
-    # Proporciones (para variables binarias/categóricas, el promedio es la proporción)
-    Prop_VIC_TRABAJA_SI = mean(VIC_TRABAJA == 1, na.rm = TRUE) * 100, # Proporción de víctimas que trabajan
-    Prop_AGR_TRABAJA_NO = mean(AGR_TRABAJA == 2, na.rm = TRUE) * 100, # Proporción de agresores que NO trabajan
-    # Moda o promedio de variables categóricas
+    Prop_VIC_TRABAJA_SI = mean(VIC_TRABAJA == 1, na.rm = TRUE) * 100, 
+    Prop_AGR_TRABAJA_NO = mean(AGR_TRABAJA == 2, na.rm = TRUE) * 100, 
     Promedio_VIC_EST_CIV = mean(VIC_EST_CIV, na.rm = TRUE),
     Promedio_AGR_EST_CIV = mean(AGR_EST_CIV, na.rm = TRUE),
     Tamano_Cluster = n()
@@ -108,10 +84,11 @@ print(perfiles_resumen)
 # Visualizaremos la edad de la víctima vs. la proporción de hijos
 ggplot(datos_finales_cluster, aes(x = VIC_EDAD, y = TOTAL_HIJOS, color = factor(cluster_group))) +
   geom_point(alpha = 0.6) +
-  labs(title = "Clústers de Vulnerabilidad: Edad vs. Carga Familiar",
+  labs(title = "Clústers de  Edad Victima vs. Total Hijos",
        x = "Edad de la Víctima",
        y = "Total de Hijos",
        color = "Clúster ID") +
   theme_minimal()
+
 
 ```
