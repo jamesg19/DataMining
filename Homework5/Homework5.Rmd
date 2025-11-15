@@ -1,0 +1,93 @@
+---
+title: "Homework 5"
+output: html_notebook
+---
+
+```{r}
+#Librerias
+install.packages("arules")
+install.packages("readxl")
+install.packages("rpart")
+install.packages("rpart.plot")
+
+library(arules)
+library(readxl)
+library(rpart)
+library(rpart.plot)
+```
+VIC_TRABAJA= 1 Trabaja, 2 No trabaja ,9 Desconocido
+
+VIC_EST_CIV= 1	Soltero(a) 2	Casado(a) 3	Unido(a) (Unión declarada o no) 4	Viudo(a) 5 Otro 9	Ignorado
+
+VIC_SEXO: 1 Hombre, 2 Mujer
+
+```{r}
+data <- read_excel("Data\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
+
+arbol7 <- rpart(
+  HEC_DEPTO  ~
+      VIC_TRABAJA + 
+      VIC_EST_CIV +
+      VIC_SEXO +
+      AGR_TRABAJA +
+      AGR_EST_CIV +
+      AGR_SEXO,
+ data = data, method = "class"
+)
+ 
+# Gráfica del árbol
+rpart.plot(
+  arbol7,
+  type = 2,
+  extra = 0,
+  under = TRUE,
+  fallen.leaves = TRUE,
+  box.palette = "GnBu",
+  main = "Hechos por Departamento",
+  cex = 0.6,
+  legend.x = NA
+)
+
+# Caso de prueba (ejemplo)
+persona <- data.frame(
+  VIC_TRABAJA = c(2), #No trabaja
+  VIC_EST_CIV = c(3), # Casada
+  VIC_SEXO = c(2),    # Víctima mujer
+  AGR_TRABAJA = c(1),
+  AGR_EST_CIV = c(3), # Unión libre
+  AGR_SEXO = c(1)     # Agresor hombre
+)
+
+# Predicción de probabilidades
+result <- predict(arbol7, persona, type = "prob")
+result
+
+```
+
+```{r}
+arbol5 <- rpart(HEC_DEPTO ~
+                  VIC_TRABAJA + 
+                  VIC_ESCOLARIDAD +
+                  VIC_EST_CIV +
+                  AGR_ESCOLARIDAD +
+                  AGR_TRABAJA +
+                  AGR_EST_CIV,
+                data = data, method = "class"
+)
+
+rpart.plot(arbol5, type = 2, extra=0, under = TRUE, fallen.leaves = TRUE, box.palette = "BuGn",
+           main="Hechos por Departamento", cex = 0.5)
+
+persona <- data.frame(
+  VIC_TRABAJA = c(1),
+  VIC_ESCOLARIDAD=c(44),
+  VIC_EST_CIV =c(9),
+  AGR_TRABAJA = c(2),
+  AGR_ESCOLARIDAD=c(44),
+  AGR_EST_CIV =c(3)
+)
+
+result <- predict(arbol5, persona, type = "prob")
+result
+
+```
