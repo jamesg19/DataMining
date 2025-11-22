@@ -1,0 +1,79 @@
+---
+title: "Homework 5"
+output: html_notebook
+---
+
+```{r}
+#Librerias
+install.packages("arules")
+install.packages("readxl")
+install.packages("rpart")
+install.packages("rpart.plot")
+install.packages("randomForest")
+```
+```{r}
+library(arules)
+library(readxl)
+library(rpart)
+library(rpart.plot)
+library(randomForest)
+```
+
+
+
+
+```{r}
+data <- read_excel("Data\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
+head(data)
+datar <- data[, c("HEC_DEPTO","AGR_EDAD","AGR_ESCOLARIDAD","AGR_TRABAJA","AGR_SEXO")]
+
+datar$HEC_DEPTO <- as.factor(datar$HEC_DEPTO)
+
+datar <- na.omit(datar)
+
+set.seed(100)
+
+datar <- datar[sample(1:nrow(datar)),]
+
+index <- sample(1:nrow(datar), 0.80*nrow(datar))
+train <-datar[index,]
+test <-datar[-index,]
+
+
+#Entrenar el modelo RandomForest
+bosque <- randomForest(
+  HEC_DEPTO ~ 
+    AGR_EDAD+
+    AGR_ESCOLARIDAD+
+    AGR_TRABAJA+
+    AGR_SEXO,
+    data =train,
+    ntree=100,
+    mtry=4
+)
+
+prueba <- predict(bosque,test)
+prueba
+ 
+matriz <- table(test$HEC_DEPTO, prueba)
+matriz
+
+pre <- sum(diag(matriz)) / sum(matriz)
+pre
+
+
+persona <- data.frame(
+  AGR_EDAD=c(20),
+  AGR_ESCOLARIDAD=c(52),
+  AGR_TRABAJA=c(1),
+  AGR_SEXO=c(1)
+)
+
+result2 <- predict(bosque, persona, type="prob")
+head(result2,25)
+
+plot(bosque)
+
+```
+
+

@@ -23,7 +23,7 @@ VIC_SEXO: 1 Hombre, 2 Mujer
 
 ```{r}
 data <- read_excel("Data\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
-
+data.head
 arbol7 <- rpart(
   HEC_DEPTO  ~
       VIC_TRABAJA + 
@@ -64,30 +64,3 @@ result
 
 ```
 
-```{r}
-arbol5 <- rpart(HEC_DEPTO ~
-                  VIC_TRABAJA + 
-                  VIC_ESCOLARIDAD +
-                  VIC_EST_CIV +
-                  AGR_ESCOLARIDAD +
-                  AGR_TRABAJA +
-                  AGR_EST_CIV,
-                data = data, method = "class"
-)
-
-rpart.plot(arbol5, type = 2, extra=0, under = TRUE, fallen.leaves = TRUE, box.palette = "BuGn",
-           main="Hechos por Departamento", cex = 0.5)
-
-persona <- data.frame(
-  VIC_TRABAJA = c(1),
-  VIC_ESCOLARIDAD=c(44),
-  VIC_EST_CIV =c(9),
-  AGR_TRABAJA = c(2),
-  AGR_ESCOLARIDAD=c(44),
-  AGR_EST_CIV =c(3)
-)
-
-result <- predict(arbol5, persona, type = "prob")
-result
-
-```
