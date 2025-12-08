@@ -23,15 +23,12 @@ VIC_SEXO: 1 Hombre, 2 Mujer
 
 ```{r}
 data <- read_excel("Data\\base-de-datos-violencia-intrafamiliar-ano-2024_v3.xlsx")
-data.head
+
 arbol7 <- rpart(
   HEC_DEPTO  ~
       VIC_TRABAJA + 
       VIC_EST_CIV +
-      VIC_SEXO +
-      AGR_TRABAJA +
-      AGR_EST_CIV +
-      AGR_SEXO,
+      VIC_SEXO,
  data = data, method = "class"
 )
  
@@ -52,10 +49,7 @@ rpart.plot(
 persona <- data.frame(
   VIC_TRABAJA = c(2), #No trabaja
   VIC_EST_CIV = c(3), # Casada
-  VIC_SEXO = c(2),    # Víctima mujer
-  AGR_TRABAJA = c(1),
-  AGR_EST_CIV = c(3), # Unión libre
-  AGR_SEXO = c(1)     # Agresor hombre
+  VIC_SEXO = c(2)
 )
 
 # Predicción de probabilidades
